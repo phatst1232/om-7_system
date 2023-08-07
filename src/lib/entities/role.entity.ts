@@ -4,11 +4,14 @@ import { User } from './user.entity'; // Import User entity
 @Entity('roles')
 export class Role {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: string;
 
   @Column({ unique: true })
   name: string;
 
-  @OneToMany(() => User, (user) => user.role) // One role can be associated with many users
+  @Column({ unique: true })
+  description: string;
+
+  @OneToMany(() => User, (user) => user.roleId) // One role can be associated with many users
   users: User[];
 }
