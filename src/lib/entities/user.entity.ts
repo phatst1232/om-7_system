@@ -3,7 +3,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   Index,
-  OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Role } from './role.entity';
 
@@ -47,7 +48,7 @@ export class User {
   @Column({ length: 50 })
   status: string;
 
-  @Column({ length: 10 })
-  @OneToMany(() => Role, (role) => role.id)
-  roleId: Role;
+  @ManyToMany(() => Role)
+  @JoinTable()
+  roles: Role[];
 }

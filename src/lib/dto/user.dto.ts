@@ -2,12 +2,10 @@ import {
   IsBoolean,
   IsDateString,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { UserRole, UserStatus } from '../constant/constants';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -52,13 +50,12 @@ export class CreateUserDto {
   dateOfBirth: Date;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsEnum(UserStatus)
-  status?: UserStatus;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  roleName?: string;
+  @IsOptional()
+  roleIds: string[];
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // @IsEnum(UserStatus)
+  // status?: UserStatus;
 }
 
 export class UpdateUserDto {
