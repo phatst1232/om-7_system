@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN nom run build
+RUN npm run build
 
 FROM node:alpine AS production
 
@@ -19,10 +19,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --only=prod
+RUN npm install --omit=dev
 
 COPY . .
 
-COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/dist/src ./dist
 
 CMD [ "node", "dist/main" ]
