@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: om7-auth-module
+spec:
+  selector:
+    matchLabels:
+      app: om7-auth-module
+  template:
+    metadata:
+      labels:
+        app: om7-auth-module
+    spec:
+      containers:
+        - name: om7-auth-module
+          image: phatst1232/om7-auth-module
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3000

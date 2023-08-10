@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from 'src/lib/dto/user.dto';
 import { v4 as GenUUIDv4 } from 'uuid';
 import { UserStatus } from 'src/lib/constant/constants';
+import { SignInDto } from 'src/lib/dto/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -21,36 +22,32 @@ export class UserService {
     private RoleService: RoleService,
   ) {}
 
-  async getAll(): Promise<User[]> {
-    try {
-      return this.userRepo.find({
-        relations: {
-          roles: true,
-        },
-      });
-    } catch (error) {
-      console.log('getAll - Service Error: ', error);
-      throw new InternalServerErrorException(
-        'Service Error - Failed to fetch all user',
-      );
-    }
+  async getAllUser(): Promise<User[]> {
+    return this.userRepo.find({
+      relations: {
+        roles: true,
+      },
+    });
   }
 
   async getUserById(id: string): Promise<User> {
-    try {
-      const user = await this.userRepo.findOne({
-        where: { id, status: UserStatus.ACTIVE },
-      });
-      if (!user) {
-        throw new NotFoundException('getUserById - User not found');
-      }
-      return user;
-    } catch (error) {
-      console.log('getUserById - Service error: ', error);
-      throw new InternalServerErrorException(
-        'Service error - Failed to fetch user by ID',
-      );
+    const user = await this.userRepo.findOne({
+      where: { id, status: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new NotFoundException('getUserById - User not found');
     }
+    return user;
+  }
+
+  async getLoginUser(signInDto: SignInDto): Promise<User> {
+    const user = await this.userRepo.findOne({
+      where: [{ email: signInDto.email }, { username: signInDto.username }],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -82,7 +79,7 @@ export class UserService {
     } catch (error) {
       console.log('createUser - Service error: ', error);
       throw new InternalServerErrorException(
-        'Service error - Failed to create user',
+        'Service error - Failed when create user',
       );
     }
   }
@@ -114,28 +111,21 @@ export class UserService {
     } catch (error) {
       console.log('createUser - Service error: ', error);
       throw new InternalServerErrorException(
-        'Service error - Failed to create user',
+        'Service error - Failed when create user',
       );
     }
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    try {
-      const user = await this.userRepo.findOne({
-        where: [{ id }, { status: UserStatus.ACTIVE }],
-      });
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-      this.userRepo.merge(user, updateUserDto);
-      await this.userRepo.save(user);
-      return user;
-    } catch (error) {
-      console.log('updateUser - Service error: ', error);
-      throw new InternalServerErrorException(
-        'Service error - Failed to update user',
-      );
+    const user = await this.userRepo.findOne({
+      where: [{ id }, { status: UserStatus.ACTIVE }],
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
+    this.userRepo.merge(user, updateUserDto);
+    await this.userRepo.save(user);
+    return user;
   }
 
   async deleteUser(id: string): Promise<void> {

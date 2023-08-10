@@ -7,18 +7,24 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/lib/entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from 'src/lib/dto/user.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Controller('user')
+@ApiTags('user')
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
   async getAll(): Promise<User[]> {
-    return this.userService.getAll();
+    return this.userService.getAllUser();
   }
 
   @Get(':id')

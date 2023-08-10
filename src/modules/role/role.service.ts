@@ -13,6 +13,23 @@ export class RoleService {
     @InjectRepository(Role)
     protected roleRopo: Repository<Role>,
   ) {}
+
+  async getAllRoles(): Promise<Role[]> {
+    try {
+      const roles = await this.roleRopo.find();
+
+      if (!roles) {
+        throw new NotFoundException('No role found');
+      }
+      return roles;
+    } catch (error) {
+      console.log('getAllRoles - Service Error: ', error);
+      throw new InternalServerErrorException(
+        'Service Error - Failed to fetch all roles',
+      );
+    }
+  }
+
   async getRoleByIds(roleIds: string[]): Promise<Role[]> {
     try {
       const roles = await this.roleRopo.findBy({ id: In(roleIds) });
