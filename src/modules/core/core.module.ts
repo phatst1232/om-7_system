@@ -1,23 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Role } from 'src/lib/entities/role.entity';
-import { User } from 'src/lib/entities/user.entity';
-import ORMConfig from 'typeorm.config';
+import { RoleModule } from '../role/role.module';
+import { UserModule } from '../user/user.module';
+import { ConfigModule } from '@nestjs/config';
+import { typeOrmConfig } from 'src/lib/config/typeorm.config';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '123212',
-      database: 'postgres',
-      entities: [User, Role],
-      synchronize: true,
-      logging: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
-    // TypeOrmModule.forRoot(ORMConfig),
+    TypeOrmModule.forRootAsync(typeOrmConfig),
+    RoleModule,
+    UserModule,
+    AuthModule,
   ],
+  exports: [CoreModule],
 })
 export class CoreModule {}

@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './modules/app.module';
+import { LoggingInterceptor } from './modules/core/interceptors/logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = process.env.PORT || 3000;
+  // const port = process.env.PORT || 3000;
 
+  app.useGlobalInterceptors(new LoggingInterceptor());
   const options = new DocumentBuilder()
     .setTitle('User management')
     .setDescription('CRUD Users')
@@ -14,8 +16,13 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
 
-  await app.listen(port);
+  await app.listen(3000);
 }
 bootstrap();
