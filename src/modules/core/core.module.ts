@@ -1,10 +1,12 @@
+import { RoleModule } from './../role/role.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RoleModule } from '../role/role.module';
-import { UserModule } from '../user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { typeOrmConfig } from 'src/lib/config/typeorm.config';
 import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { AllExceptionsFilter } from 'src/global-http-ex.filter';
 
 @Module({
   imports: [
@@ -12,10 +14,20 @@ import { AuthModule } from '../auth/auth.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync(typeOrmConfig),
-    RoleModule,
     UserModule,
+    RoleModule,
     AuthModule,
   ],
-  exports: [CoreModule],
+  providers: [
+    {
+      //App exception filter
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: HttpCacheInterceptor,
+    // },
+  ],
 })
 export class CoreModule {}

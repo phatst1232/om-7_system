@@ -1,19 +1,14 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CoreModule } from './core/core.module';
-import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionsFilter } from 'src/global-http-ex.filter';
 import { RateLimitMiddleware } from './core/middlewares/rate-limit.middleware';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
-  imports: [CoreModule],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: AllExceptionsFilter,
-    },
-  ],
+  imports: [CoreModule, UserModule, AuthModule, RoleModule],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RateLimitMiddleware).forRoutes('auth', 'user', 'role');
   }
