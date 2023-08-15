@@ -7,6 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '../entities/role.entity';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -95,4 +96,14 @@ export class UpdateUserDto {
   dateOfBirth: Date;
 
   // Add other properties as needed for user updates
+}
+
+export class GetUserDto {
+  id: string;
+  username: string;
+  fullName: string;
+  gender: boolean;
+  image: string;
+  dateOfBirth: Date;
+  createdAt: Date;
 }

@@ -8,6 +8,11 @@ export enum UserStatus {
   INACTIVE = 'inactive',
 }
 
+export enum CommonStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
 export enum UserRole {
   ADMIN = '1',
   USER = '2',

@@ -1,11 +1,16 @@
+import { UpdateRoleDto } from './../../lib/dto/role.dto';
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CommonStatus, UserStatus } from 'src/lib/constant/constants';
+import { CreateRoleDto } from 'src/lib/dto/role.dto';
 import { Role } from 'src/lib/entities/role.entity';
 import { In, Repository } from 'typeorm';
+import { v4 as GenUUIDv4 } from 'uuid';
 
 @Injectable()
 export class RoleService {
@@ -15,54 +20,79 @@ export class RoleService {
   ) {}
 
   async getAllRoles(): Promise<Role[]> {
-    try {
-      const roles = await this.roleRopo.find();
-
-      if (!roles) {
-        throw new NotFoundException('No role found');
-      }
-      return roles;
-    } catch (error) {
-      console.log('getAllRoles - Service Error: ', error);
-      throw new InternalServerErrorException(
-        'Service Error - Failed to fetch all roles',
-      );
+    const roles = await this.roleRopo.find();
+    if (!roles) {
+      throw new NotFoundException('No role found');
     }
+    return roles;
   }
 
   async getRoleByIds(roleIds: string[]): Promise<Role[]> {
+    const roles = await this.roleRopo.findBy({ id: In(roleIds) });
+    if (!roles) {
+      throw new NotFoundException('Role not found');
+    }
+    return roles;
+  }
+
+  async getRoleByName(roleName: string): Promise<Role> {
+    const role = await this.roleRopo.findOne({
+      where: { name: roleName },
+    });
+    if (!role) {
+      throw new NotFoundException('Role not found with roleName: ', roleName);
+    }
+    return role;
+  }
+
+  async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
+    const existedRole = await this.roleRopo.findOne({
+      where: { name: createRoleDto.name },
+    });
+    if (existedRole) {
+      throw new ConflictException('Role already exists');
+    }
+    const newRole = this.roleRopo.create(createRoleDto);
     try {
-      const roles = await this.roleRopo.findBy({ id: In(roleIds) });
-
-      if (!roles) {
-        throw new NotFoundException('Role not found');
-      }
-
-      return roles;
+      newRole.id = GenUUIDv4();
+      newRole.status = CommonStatus.ACTIVE;
+      await this.roleRopo.save(newRole);
+      return newRole;
     } catch (error) {
-      console.log('getRoleById - Service Error: ', error);
+      console.log('createRole - Service error: ', error);
       throw new InternalServerErrorException(
-        'Service Error - Failed to fetch role by ID',
+        'Service error - Failed when create role',
       );
     }
   }
 
-  async getRoleByName(roleName: string): Promise<Role> {
+  async updateRole(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
+    const role = await this.roleRopo.findOne({
+      where: { id },
+    });
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
+    this.roleRopo.merge(role, updateRoleDto);
+    await this.roleRopo.save(role);
+    return role;
+  }
+
+  async deleteRole(id: string): Promise<void> {
+    const role = await this.roleRopo.findOne({
+      where: { id, status: CommonStatus.ACTIVE },
+    });
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
+
+    role.status = CommonStatus.INACTIVE;
     try {
-      const role = await this.roleRopo.findOne({
-        where: { name: roleName },
-      });
-
-      if (!role) {
-        throw new NotFoundException('Role not found with roleName: ', roleName);
-      }
-
-      return role;
+      this.roleRopo.save(role);
     } catch (error) {
-      console.log('getRoleByName - Service Error: ', error);
+      console.log('deleteRole - Service error: ', error);
       throw new InternalServerErrorException(
-        'Service Error - Failed to fetch role by name: ',
-        roleName,
+        'Service error - Failed to delete role',
       );
     }
   }

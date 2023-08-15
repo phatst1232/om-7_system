@@ -11,24 +11,28 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/lib/entities/user.entity';
-import { CreateUserDto, UpdateUserDto } from 'src/lib/dto/user.dto';
+import { CreateUserDto, GetUserDto, UpdateUserDto } from 'src/lib/dto/user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/role.guard';
 
 @Controller('user')
 @ApiTags('user')
 @UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 @ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Roles('admin')
   @Get()
   async getAll(): Promise<User[]> {
     return this.userService.getAllUser();
   }
 
   @Get(':id')
-  async getById(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
+  async getById(@Param('id', ParseUUIDPipe) id: string): Promise<GetUserDto> {
     return this.userService.getUserById(id);
   }
 

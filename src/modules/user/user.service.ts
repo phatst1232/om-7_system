@@ -1,5 +1,5 @@
 import { RoleService } from './../role/role.service';
-import { UpdateUserDto } from './../../lib/dto/user.dto';
+import { GetUserDto, UpdateUserDto } from './../../lib/dto/user.dto';
 import {
   ConflictException,
   Injectable,
@@ -30,19 +30,31 @@ export class UserService {
     });
   }
 
-  async getUserById(id: string): Promise<User> {
+  async getUserById(id: string): Promise<GetUserDto> {
     const user = await this.userRepo.findOne({
       where: { id, status: UserStatus.ACTIVE },
+      relations: {
+        roles: true,
+      },
     });
     if (!user) {
       throw new NotFoundException('getUserById - User not found');
     }
-    return user;
+    const getUserRes: GetUserDto = {
+      id: user.id,
+      username: user.username,
+      fullName: user.fullName,
+      gender: user.gender,
+      image: user.image,
+      dateOfBirth: user.dateOfBirth,
+      createdAt: user.createdAt,
+    };
+    return getUserRes;
   }
 
   async getLoginUser(signInDto: SignInDto): Promise<User> {
     const user = await this.userRepo.findOne({
-      where: [{ email: signInDto.email }, { username: signInDto.username }],
+      where: { username: signInDto.username, status: UserStatus.ACTIVE },
     });
     if (!user) {
       throw new NotFoundException('User not found');

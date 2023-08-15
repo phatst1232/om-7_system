@@ -13,7 +13,7 @@ export class AuthService {
   async signIn(signInDto: SignInDto) {
     const user = await this.userService.getLoginUser(signInDto);
     if (user?.password !== signInDto.password) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid Password');
     }
     const payload = { sub: user.id, username: user.username };
     return {

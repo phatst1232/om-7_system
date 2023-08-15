@@ -4,9 +4,12 @@ import { RateLimitMiddleware } from './core/middlewares/rate-limit.middleware';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
+import { PermissionService } from './permission/permission.service';
+import { PermissionModule } from './permission/permission.module';
 
 @Module({
-  imports: [CoreModule, UserModule, AuthModule, RoleModule],
+  imports: [CoreModule, UserModule, AuthModule, RoleModule, PermissionModule],
+  providers: [PermissionService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
