@@ -5,8 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { typeOrmConfig } from 'src/config/typeorm.config';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { AllExceptionsFilter } from 'src/modules/core/filters/global-http-ex.filter';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from 'src/shared/filters/global-http-ex.filter';
 
 @Module({
   imports: [
@@ -20,14 +20,9 @@ import { AllExceptionsFilter } from 'src/modules/core/filters/global-http-ex.fil
   ],
   providers: [
     {
-      //App exception filter
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useClass: HttpCacheInterceptor,
-    // },
   ],
 })
 export class CoreModule {}
