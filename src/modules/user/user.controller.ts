@@ -11,11 +11,15 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from 'src/modules/user/user.entity';
-import { CreateUserDto, GetUserDto, UpdateUserDto } from 'src/modules/user/dto/user.dto';
+import {
+  CreateUserDto,
+  GetUserDto,
+  UpdateUserDto,
+} from 'src/modules/user/dto/user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../auth/guards/auth.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { RolesGuard } from '../auth/guards/role.guard';
+import { AuthGuard } from '../../shared/guards/auth.guard';
+import { RolesGuard } from '../../shared/guards/role.guard';
+import { Roles } from 'src/shared/decorators/roles.decorator';
 
 @Controller('user')
 @ApiTags('user')
