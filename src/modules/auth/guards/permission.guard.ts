@@ -1,8 +1,8 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Permission } from 'src/lib/entities/permission.entity';
-import { Role } from 'src/lib/entities/role.entity';
-import { User } from 'src/lib/entities/user.entity';
+import { Permission } from 'src/modules/permission/permission.entity';
+import { Role } from 'src/modules/role/role.entity';
+import { User } from 'src/modules/user/user.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {

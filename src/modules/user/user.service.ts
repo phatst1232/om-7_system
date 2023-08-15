@@ -1,18 +1,18 @@
 import { RoleService } from './../role/role.service';
-import { GetUserDto, UpdateUserDto } from './../../lib/dto/user.dto';
+import { GetUserDto, UpdateUserDto } from './dto/user.dto';
 import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from 'src/lib/entities/user.entity';
+import { User } from 'src/modules/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from 'src/lib/dto/user.dto';
+import { CreateUserDto } from 'src/modules/user/dto/user.dto';
 import { v4 as GenUUIDv4 } from 'uuid';
-import { UserStatus } from 'src/lib/constant/constants';
-import { SignInDto } from 'src/lib/dto/auth.dto';
+import { UserStatus } from 'src/shared/constant/constants';
+import { SignInDto } from 'src/modules/auth/dto/auth.dto';
 
 @Injectable()
 export class UserService {

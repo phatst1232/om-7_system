@@ -8,7 +8,7 @@ import {
   Request,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto } from 'src/lib/dto/auth.dto';
+import { SignInDto } from 'src/modules/auth/dto/auth.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')

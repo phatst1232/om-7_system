@@ -1,4 +1,4 @@
-import { UpdateRoleDto } from './../../lib/dto/role.dto';
+import { UpdateRoleDto } from './dto/role.dto';
 import {
   ConflictException,
   Injectable,
@@ -6,9 +6,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonStatus, UserStatus } from 'src/lib/constant/constants';
-import { CreateRoleDto } from 'src/lib/dto/role.dto';
-import { Role } from 'src/lib/entities/role.entity';
+import { CommonStatus, UserStatus } from 'src/shared/constant/constants';
+import { CreateRoleDto } from 'src/modules/role/dto/role.dto';
+import { Role } from 'src/modules/role/role.entity';
 import { In, Repository } from 'typeorm';
 import { v4 as GenUUIDv4 } from 'uuid';
 

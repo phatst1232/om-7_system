@@ -13,8 +13,8 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   CreatePermissionDto,
   UpdatePermissionDto,
-} from 'src/lib/dto/permission.dto';
-import { Permission } from 'src/lib/entities/permission.entity';
+} from 'src/modules/permission/dto/permission.dto';
+import { Permission } from 'src/modules/permission/permission.entity';
 
 @Controller('permission')
 @ApiTags('permission')

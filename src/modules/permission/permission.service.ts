@@ -1,4 +1,4 @@
-import { UpdatePermissionDto } from './../../lib/dto/permission.dto';
+import { UpdatePermissionDto } from './dto/permission.dto';
 import {
   ConflictException,
   Injectable,
@@ -6,9 +6,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonStatus } from 'src/lib/constant/constants';
-import { CreatePermissionDto } from 'src/lib/dto/permission.dto';
-import { Permission } from 'src/lib/entities/permission.entity';
+import { CommonStatus } from 'src/shared/constant/constants';
+import { CreatePermissionDto } from 'src/modules/permission/dto/permission.dto';
+import { Permission } from 'src/modules/permission/permission.entity';
 import { In, Repository } from 'typeorm';
 import { v4 as GenUUIDv4 } from 'uuid';
 

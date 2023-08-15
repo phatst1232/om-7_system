@@ -7,7 +7,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../entities/role.entity';
+import { Role } from '../../role/role.entity';
 
 export class CreateUserDto {
   @ApiProperty()

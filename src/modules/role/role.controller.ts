@@ -10,8 +10,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateRoleDto, UpdateRoleDto } from 'src/lib/dto/role.dto';
-import { Role } from 'src/lib/entities/role.entity';
+import { CreateRoleDto, UpdateRoleDto } from 'src/modules/role/dto/role.dto';
+import { Role } from 'src/modules/role/role.entity';
 
 @Controller('role')
 @ApiTags('role')

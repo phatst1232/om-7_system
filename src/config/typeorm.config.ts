@@ -2,9 +2,11 @@ import {
   TypeOrmModuleAsyncOptions,
   TypeOrmModuleOptions,
 } from '@nestjs/typeorm';
-import { User } from 'src/lib/entities/user.entity';
-import { Role } from 'src/lib/entities/role.entity';
+import { User } from 'src/modules/user/user.entity';
+import { Role } from 'src/modules/role/role.entity';
 import { ConfigService } from '@nestjs/config';
+import { Permission } from '../modules/permission/permission.entity';
+import { join } from 'path';
 
 export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
   useFactory: async (
@@ -17,7 +19,8 @@ export const typeOrmConfig: TypeOrmModuleAsyncOptions = {
       username: configService.get<string>('DB_USERNAME'),
       password: configService.get<string>('DB_PASSWORD'),
       database: configService.get<string>('DB_DATABASE'),
-      entities: [User, Role],
+      entities: [User, Role, Permission],
+      migrations: [join(__dirname, 'src', 'migrations', '*.ts')],
       synchronize: true,
       logging: true,
     };

@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { User } from 'src/lib/entities/user.entity';
-import { CreateUserDto, GetUserDto, UpdateUserDto } from 'src/lib/dto/user.dto';
+import { User } from 'src/modules/user/user.entity';
+import { CreateUserDto, GetUserDto, UpdateUserDto } from 'src/modules/user/dto/user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/guards/auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
