@@ -14,7 +14,9 @@ import { User } from 'src/modules/user/user.entity';
 import {
   CreateUserDto,
   GetUserDto,
+  SearchUserDto,
   UpdateUserDto,
+  UpdateUserStatusDto,
 } from 'src/modules/user/dto/user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../shared/guards/auth.guard';
@@ -32,12 +34,19 @@ export class UserController {
   @Roles('admin')
   @Get()
   async getAll(): Promise<User[]> {
-    return this.userService.getAllUser();
+    return await this.userService.getAllUser();
+  }
+
+  @Post('list')
+  async getUserSearch(
+    @Body() searchUserDto: SearchUserDto,
+  ): Promise<GetUserDto[]> {
+    return await this.userService.getUserSearch(searchUserDto);
   }
 
   @Get(':id')
   async getById(@Param('id', ParseUUIDPipe) id: string): Promise<GetUserDto> {
-    return this.userService.getUserById(id);
+    return await this.userService.getUserById(id);
   }
 
   @Post()
@@ -52,12 +61,20 @@ export class UserController {
     return await this.userService.createUserWithRole(createUserDto);
   }
 
-  @Put(':id')
+  @Put('update/:id')
   updateUser(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  ): Promise<GetUserDto> {
     return this.userService.updateUser(id, updateUserDto);
+  }
+
+  @Put('update-status/:id')
+  updateUserStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateUserDto: UpdateUserStatusDto,
+  ): Promise<GetUserDto> {
+    return this.userService.updateUserStatus(id, updateUserDto);
   }
 
   @Delete(':id')

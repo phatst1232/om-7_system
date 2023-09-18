@@ -14,16 +14,15 @@ export class PermissionGuard implements CanActivate {
       context.getHandler(),
     );
     if (!requiredPermissions) {
-      return true; // No permissions required, allow access
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
-    const user: User = request.user; // Get user from request
+    const user: User = request.user;
     if (!user) {
-      return false; // User not authenticated
+      return false;
     }
 
-    // Check if user has any of the required permissions
     const userPermissions = user.roles.flatMap(
       (role: Role) => role.permissions,
     );

@@ -4,8 +4,9 @@ export const jwtConstants = {
 };
 
 export enum UserStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
+  DELETED = 'Deleted',
 }
 
 export enum CommonStatus {
