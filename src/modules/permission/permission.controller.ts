@@ -1,3 +1,4 @@
+import { Permission } from './permission.entity';
 import { PermissionService } from './permission.service';
 import {
   Body,
@@ -14,7 +15,7 @@ import {
   CreatePermissionDto,
   UpdatePermissionDto,
 } from 'src/modules/permission/dto/permission.dto';
-import { Permission } from 'src/modules/permission/permission.entity';
+import { SearchDataDto } from '../user/dto/user.dto';
 
 @Controller('permission')
 @ApiTags('permission')
@@ -24,6 +25,13 @@ export class PermissionController {
   @Get()
   async getAllPermission(): Promise<Permission[]> {
     return this.permissionService.getAllPermissions();
+  }
+
+  @Post('list')
+  async getRoleSearch(
+    @Body() searchDataDto: SearchDataDto,
+  ): Promise<Permission[]> {
+    return await this.permissionService.getPermissionSearch(searchDataDto);
   }
 
   // @Get(':id')

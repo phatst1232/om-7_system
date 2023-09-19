@@ -14,7 +14,7 @@ import { User } from 'src/modules/user/user.entity';
 import {
   CreateUserDto,
   GetUserDto,
-  SearchUserDto,
+  SearchDataDto,
   UpdateUserDto,
   UpdateUserStatusDto,
 } from 'src/modules/user/dto/user.dto';
@@ -39,7 +39,7 @@ export class UserController {
 
   @Post('list')
   async getUserSearch(
-    @Body() searchUserDto: SearchUserDto,
+    @Body() searchUserDto: SearchDataDto,
   ): Promise<GetUserDto[]> {
     return await this.userService.getUserSearch(searchUserDto);
   }

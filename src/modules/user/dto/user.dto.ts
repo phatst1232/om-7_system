@@ -9,7 +9,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../role/role.entity';
 
-export class SearchUserDto {
+export class SearchDataDto {
   @ApiProperty()
   @IsOptional()
   @IsString()

@@ -6,29 +6,43 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CommonStatus, UserStatus } from 'src/shared/constant/constants';
+import { CommonStatus } from 'src/shared/constant/constants';
 import { CreateRoleDto } from 'src/modules/role/dto/role.dto';
 import { Role } from 'src/modules/role/role.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Not, Repository } from 'typeorm';
 import { v4 as GenUUIDv4 } from 'uuid';
+import { SearchDataDto } from '../user/dto/user.dto';
 
 @Injectable()
 export class RoleService {
   constructor(
     @InjectRepository(Role)
-    protected roleRopo: Repository<Role>,
+    protected roleRepo: Repository<Role>,
   ) {}
 
-  async getAllRoles(): Promise<Role[]> {
-    const roles = await this.roleRopo.find();
+  async getAllRole(): Promise<Role[]> {
+    const roles = await this.roleRepo.find();
     if (!roles) {
       throw new NotFoundException('No role found');
     }
     return roles;
   }
 
-  async getRoleByIds(roleIds: string[]): Promise<Role[]> {
-    const roles = await this.roleRopo.findBy({ id: In(roleIds) });
+  async getRoleSearch(dto: SearchDataDto): Promise<Role[]> {
+    const listRole = await this.roleRepo.find({
+      where: {
+        status: Not(CommonStatus.DELETED),
+        name: ILike(`%${dto.searchData}%`),
+      },
+      relations: {
+        permissions: true,
+      },
+    });
+    return listRole;
+  }
+
+  async getRoleById(roleIds: string[]): Promise<Role[]> {
+    const roles = await this.roleRepo.findBy({ id: In(roleIds) });
     if (!roles) {
       throw new NotFoundException('Role not found');
     }
@@ -36,7 +50,7 @@ export class RoleService {
   }
 
   async getRoleByName(roleName: string): Promise<Role> {
-    const role = await this.roleRopo.findOne({
+    const role = await this.roleRepo.findOne({
       where: { name: roleName },
     });
     if (!role) {
@@ -46,17 +60,17 @@ export class RoleService {
   }
 
   async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
-    const existedRole = await this.roleRopo.findOne({
+    const existedRole = await this.roleRepo.findOne({
       where: { name: createRoleDto.name },
     });
     if (existedRole) {
       throw new ConflictException('Role already exists');
     }
-    const newRole = this.roleRopo.create(createRoleDto);
+    const newRole = this.roleRepo.create(createRoleDto);
     try {
       newRole.id = GenUUIDv4();
       newRole.status = CommonStatus.ACTIVE;
-      await this.roleRopo.save(newRole);
+      await this.roleRepo.save(newRole);
       return newRole;
     } catch (error) {
       console.log('createRole - Service error: ', error);
@@ -67,19 +81,19 @@ export class RoleService {
   }
 
   async updateRole(id: string, updateRoleDto: UpdateRoleDto): Promise<Role> {
-    const role = await this.roleRopo.findOne({
+    const role = await this.roleRepo.findOne({
       where: { id },
     });
     if (!role) {
       throw new NotFoundException('Role not found');
     }
-    this.roleRopo.merge(role, updateRoleDto);
-    await this.roleRopo.save(role);
+    this.roleRepo.merge(role, updateRoleDto);
+    await this.roleRepo.save(role);
     return role;
   }
 
   async deleteRole(id: string): Promise<void> {
-    const role = await this.roleRopo.findOne({
+    const role = await this.roleRepo.findOne({
       where: { id, status: CommonStatus.ACTIVE },
     });
     if (!role) {
@@ -88,7 +102,7 @@ export class RoleService {
 
     role.status = CommonStatus.INACTIVE;
     try {
-      this.roleRopo.save(role);
+      this.roleRepo.save(role);
     } catch (error) {
       console.log('deleteRole - Service error: ', error);
       throw new InternalServerErrorException(

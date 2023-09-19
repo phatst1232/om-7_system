@@ -2,7 +2,7 @@ import { RoleService } from './../role/role.service';
 import {
   GetUserDto,
   UpdateUserDto,
-  SearchUserDto,
+  SearchDataDto,
   GetListUserDto,
   UpdateUserStatusDto,
 } from './dto/user.dto';
@@ -18,7 +18,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Not, Repository } from 'typeorm';
 import { CreateUserDto } from 'src/modules/user/dto/user.dto';
 import { v4 as GenUUIDv4 } from 'uuid';
-import { UserStatus } from 'src/shared/constant/constants';
+import { CommonStatus } from 'src/shared/constant/constants';
 import { SignInDto } from 'src/modules/auth/dto/auth.dto';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class UserService {
     });
   }
 
-  async getUserSearch(dto: SearchUserDto): Promise<GetUserDto[]> {
+  async getUserSearch(dto: SearchDataDto): Promise<GetUserDto[]> {
     // const whereCond = [];
     // if (dto.searchData) {
     //   whereCond.push({ username: ILike(`%${dto.searchData}%`) });
@@ -47,7 +47,7 @@ export class UserService {
     // }
     const listUser = await this.userRepo.find({
       where: {
-        status: Not(UserStatus.DELETED),
+        status: Not(CommonStatus.DELETED),
         username: ILike(`%${dto.searchData}%`),
       },
       relations: {
@@ -76,7 +76,7 @@ export class UserService {
 
   async getUserById(id: string): Promise<GetUserDto> {
     const user = await this.userRepo.findOne({
-      where: { id, status: UserStatus.ACTIVE },
+      where: { id, status: CommonStatus.ACTIVE },
       relations: {
         roles: true,
       },
@@ -101,7 +101,7 @@ export class UserService {
 
   async getLoginUser(signInDto: SignInDto): Promise<GetUserDto> {
     const user = await this.userRepo.findOne({
-      where: { username: signInDto.username, status: UserStatus.ACTIVE },
+      where: { username: signInDto.username, status: CommonStatus.ACTIVE },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -146,7 +146,7 @@ export class UserService {
     const newUser = this.userRepo.create(createUserDto);
     try {
       newUser.id = GenUUIDv4();
-      newUser.status = UserStatus.ACTIVE;
+      newUser.status = CommonStatus.ACTIVE;
       newUser.roles = [defaultRole];
       await this.userRepo.save(newUser);
       return newUser;
@@ -170,7 +170,7 @@ export class UserService {
       throw new ConflictException('User already exists');
     }
 
-    const roles = await this.RoleService.getRoleByIds(createUserDto.roleIds);
+    const roles = await this.RoleService.getRoleById(createUserDto.roleIds);
     if (!roles) {
       throw new NotFoundException('Invalid roleId');
     }
@@ -178,7 +178,7 @@ export class UserService {
     const newUser = this.userRepo.create(createUserDto);
     try {
       newUser.id = GenUUIDv4();
-      newUser.status = UserStatus.ACTIVE;
+      newUser.status = CommonStatus.ACTIVE;
       newUser.roles = roles;
       await this.userRepo.save(newUser);
       return newUser;
@@ -253,7 +253,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    user.status = UserStatus.DELETED;
+    user.status = CommonStatus.DELETED;
     try {
       this.userRepo.save(user);
     } catch (error) {

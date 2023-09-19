@@ -3,16 +3,16 @@ export const jwtConstants = {
     'DO NOT USE THIS VALUE. INSTEAD, CREATE A COMPLEX SECRET AND KEEP IT SAFE OUTSIDE OF THE SOURCE CODE.',
 };
 
-export enum UserStatus {
+export enum CommonStatus {
   ACTIVE = 'Active',
   INACTIVE = 'Inactive',
   DELETED = 'Deleted',
 }
 
-export enum CommonStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-}
+// export enum CommonStatus {
+//   ACTIVE = 'active',
+//   INACTIVE = 'inactive',
+// }
 
 export enum UserRole {
   ADMIN = '1',

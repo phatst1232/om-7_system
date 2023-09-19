@@ -12,25 +12,33 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { CreateRoleDto, UpdateRoleDto } from 'src/modules/role/dto/role.dto';
 import { Role } from 'src/modules/role/role.entity';
+import { Roles } from 'src/shared/decorators/roles.decorator';
+import { SearchDataDto } from '../user/dto/user.dto';
 
 @Controller('role')
 @ApiTags('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  @Roles('admin')
   @Get()
   async getAllRole(): Promise<Role[]> {
-    return this.roleService.getAllRoles();
+    return this.roleService.getAllRole();
   }
 
   @Get(':id')
   async getById(@Param('id', ParseUUIDPipe) ids: string[]): Promise<Role[]> {
-    return this.roleService.getRoleByIds(ids);
+    return this.roleService.getRoleById(ids);
   }
 
   @Get('get-by-name:name')
   async getByName(@Param('name') name: string): Promise<Role> {
     return this.roleService.getRoleByName(name);
+  }
+
+  @Post('list')
+  async getRoleSearch(@Body() searchRoleDto: SearchDataDto): Promise<Role[]> {
+    return await this.roleService.getRoleSearch(searchRoleDto);
   }
 
   @Post()
