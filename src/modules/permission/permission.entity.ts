@@ -8,7 +8,7 @@ export class Permission {
   @Column({ unique: true })
   name: string;
 
-  @Column({ unique: true })
+  @Column({ unique: false })
   description: string;
 
   @Column({ length: 50 })

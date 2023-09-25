@@ -1,9 +1,9 @@
 import {
   Injectable,
+  Logger,
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -18,15 +18,21 @@ export class LoggingInterceptor implements NestInterceptor {
     const url = request.url;
     const requestBody = JSON.stringify(request.body);
 
-    this.logger.log(`[${method}] ${url} - Request Body: ${requestBody}`);
+    // Log the request
+    this.logger.log(
+      `[${method}] ${url} - Request Body: ${requestBody}`,
+      'Request',
+    );
 
     return next.handle().pipe(
       tap((response) => {
         const responseStatus = context.switchToHttp().getResponse().statusCode;
         const responseBody = JSON.stringify(response);
 
+        // Log the response
         this.logger.log(
           `[${method}] ${url} - Response Status: ${responseStatus} - Response Body: ${responseBody}`,
+          'Response',
         );
       }),
     );

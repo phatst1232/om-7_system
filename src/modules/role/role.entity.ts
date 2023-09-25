@@ -12,10 +12,10 @@ export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: false })
   name: string;
 
-  @Column({ unique: true })
+  @Column({ unique: false })
   description: string;
 
   @Column({ length: 50 })

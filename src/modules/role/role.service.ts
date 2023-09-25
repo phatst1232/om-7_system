@@ -12,12 +12,14 @@ import { Role } from 'src/modules/role/role.entity';
 import { ILike, In, Not, Repository } from 'typeorm';
 import { v4 as GenUUIDv4 } from 'uuid';
 import { SearchDataDto } from '../user/dto/user.dto';
+import { PermissionService } from '../permission/permission.service';
 
 @Injectable()
 export class RoleService {
   constructor(
     @InjectRepository(Role)
     protected roleRepo: Repository<Role>,
+    protected permissionService: PermissionService,
   ) {}
 
   async getAllRole(): Promise<Role[]> {
@@ -60,14 +62,26 @@ export class RoleService {
   }
 
   async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
-    const existedRole = await this.roleRepo.findOne({
-      where: { name: createRoleDto.name },
-    });
-    if (existedRole) {
-      throw new ConflictException('Role already exists');
-    }
-    const newRole = this.roleRepo.create(createRoleDto);
     try {
+      const existedRole = await this.roleRepo.findOne({
+        where: { name: createRoleDto.name, status: Not(CommonStatus.DELETED) },
+      });
+      if (existedRole) {
+        throw new ConflictException('Role already exists');
+      }
+      const newRole = this.roleRepo.create(createRoleDto);
+
+      //get Permissions
+      if (createRoleDto.permissions) {
+        const listPmsId = createRoleDto.permissions?.map((per) => per.id);
+        const rolePermissions = await this.permissionService.getListPermissions(
+          listPmsId,
+        );
+        if (rolePermissions) {
+          newRole.permissions = rolePermissions;
+        }
+      }
+
       newRole.id = GenUUIDv4();
       newRole.status = CommonStatus.ACTIVE;
       await this.roleRepo.save(newRole);
@@ -94,13 +108,13 @@ export class RoleService {
 
   async deleteRole(id: string): Promise<void> {
     const role = await this.roleRepo.findOne({
-      where: { id, status: CommonStatus.ACTIVE },
+      where: { id, status: Not(CommonStatus.DELETED) },
     });
     if (!role) {
       throw new NotFoundException('Role not found');
     }
 
-    role.status = CommonStatus.INACTIVE;
+    role.status = CommonStatus.DELETED;
     try {
       this.roleRepo.save(role);
     } catch (error) {

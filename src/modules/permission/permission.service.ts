@@ -39,6 +39,15 @@ export class PermissionService {
     return listPermission;
   }
 
+  async getListPermissions(listId: string[]): Promise<Permission[]> {
+    const permissions = await this.permissionRepo.find();
+    const resultList = permissions.filter((per) => listId.includes(per.id));
+    if (!resultList) {
+      throw new NotFoundException('getListPermissions - No permission found');
+    }
+    return resultList;
+  }
+
   async getPermissionByName(permissionName: string): Promise<Permission> {
     const permission = await this.permissionRepo.findOne({
       where: { name: permissionName },
@@ -65,6 +74,7 @@ export class PermissionService {
     try {
       newPermission.id = GenUUIDv4();
       newPermission.status = CommonStatus.ACTIVE;
+      if (!newPermission.description) newPermission.description = '';
       await this.permissionRepo.save(newPermission);
       return newPermission;
     } catch (error) {
@@ -92,13 +102,13 @@ export class PermissionService {
 
   async deletePermission(id: string): Promise<void> {
     const permission = await this.permissionRepo.findOne({
-      where: { id, status: CommonStatus.ACTIVE },
+      where: { id, status: Not(CommonStatus.DELETED) },
     });
     if (!permission) {
       throw new NotFoundException('Permission not found');
     }
 
-    permission.status = CommonStatus.INACTIVE;
+    permission.status = CommonStatus.DELETED;
     try {
       this.permissionRepo.save(permission);
     } catch (error) {

@@ -1,3 +1,4 @@
+import { Permission } from 'src/modules/permission/permission.entity';
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateRoleDto {
@@ -9,7 +10,8 @@ export class CreateRoleDto {
   @IsString()
   description: string;
 
-  // Add validation for permissions if needed
+  @IsNotEmpty()
+  permissions: Permission[];
 }
 
 export class UpdateRoleDto {

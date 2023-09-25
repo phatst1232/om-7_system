@@ -27,8 +27,8 @@ export class PermissionController {
     return this.permissionService.getAllPermissions();
   }
 
-  @Post('list')
-  async getRoleSearch(
+  @Post('')
+  async getPermissionSearch(
     @Body() searchDataDto: SearchDataDto,
   ): Promise<Permission[]> {
     return await this.permissionService.getPermissionSearch(searchDataDto);
@@ -48,7 +48,7 @@ export class PermissionController {
 
   @Post()
   async createPermission(
-    createPermissionDto: CreatePermissionDto,
+    @Body() createPermissionDto: CreatePermissionDto,
   ): Promise<Permission> {
     return await this.permissionService.createPermission(createPermissionDto);
   }

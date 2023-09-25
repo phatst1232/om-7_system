@@ -42,7 +42,7 @@ export class RoleController {
   }
 
   @Post()
-  async createRole(createRoleDto: CreateRoleDto): Promise<Role> {
+  async createRole(@Body() createRoleDto: CreateRoleDto): Promise<Role> {
     return await this.roleService.createRole(createRoleDto);
   }
 
