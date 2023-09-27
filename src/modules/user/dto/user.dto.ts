@@ -2,12 +2,14 @@ import {
   IsBoolean,
   IsDateString,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '../../role/role.entity';
+import { CommonStatus } from 'src/shared/constant/constants';
 
 export class SearchDataDto {
   @ApiProperty()
@@ -22,24 +24,24 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   username: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  password: string;
+  password?: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   fullName: string;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  phone: string;
+  phone?: string;
 
   @ApiProperty()
   @IsOptional()
@@ -49,21 +51,21 @@ export class CreateUserDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  image: string;
+  image?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsDateString()
-  dateOfBirth: Date;
+  dateOfBirth?: Date;
 
   @ApiProperty()
   @IsOptional()
-  roleIds: string[];
+  roles?: Role[];
 
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // @IsEnum(UserStatus)
-  // status?: UserStatus;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  status?: string;
 }
 
 export class UpdateUserDto {
@@ -128,7 +130,7 @@ export class GetUserDto {
   gender: boolean;
   image: string;
   dateOfBirth: Date;
-  roles?: string[];
+  roles?: Role[];
   createdAt: Date;
   status: string;
 }

@@ -26,7 +26,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private userRepo: Repository<User>,
-    private RoleService: RoleService,
+    private roleService: RoleService,
   ) {}
 
   async getAllUser(): Promise<User[]> {
@@ -66,7 +66,7 @@ export class UserService {
       usr.image = user.image;
       usr.createdAt = user.createdAt;
       usr.dateOfBirth = user.dateOfBirth;
-      usr.roles = user.roles.map((role) => role.name);
+      usr.roles = user.roles;
       usr.status = user.status;
 
       dataRes.push(usr);
@@ -93,7 +93,7 @@ export class UserService {
       image: user.image,
       dateOfBirth: user.dateOfBirth,
       createdAt: user.createdAt,
-      roles: user.roles.map((role) => role.name),
+      roles: user.roles,
       status: user.status,
     };
     return getUserRes;
@@ -136,7 +136,7 @@ export class UserService {
       throw new ConflictException('User already exists');
     }
 
-    const defaultRole = await this.RoleService.getRoleByName('user');
+    const defaultRole = await this.roleService.getRoleByName('user');
     if (!defaultRole) {
       throw new InternalServerErrorException(
         'Service error - Fail to get default role(basic user)',
@@ -146,6 +146,7 @@ export class UserService {
     const newUser = this.userRepo.create(createUserDto);
     try {
       newUser.id = GenUUIDv4();
+      // newUser.password = 'default';
       newUser.status = CommonStatus.ACTIVE;
       newUser.roles = [defaultRole];
       await this.userRepo.save(newUser);
@@ -159,6 +160,7 @@ export class UserService {
   }
 
   async createUserWithRole(createUserDto: CreateUserDto): Promise<User> {
+    // thiếu roles và pw
     const existedUser = await this.userRepo.findOne({
       where: [
         { username: createUserDto.username },
@@ -167,19 +169,22 @@ export class UserService {
     });
 
     if (existedUser) {
-      throw new ConflictException('User already exists');
-    }
-
-    const roles = await this.RoleService.getRoleById(createUserDto.roleIds);
-    if (!roles) {
-      throw new NotFoundException('Invalid roleId');
+      throw new ConflictException('User already exists ');
     }
 
     const newUser = this.userRepo.create(createUserDto);
+    if (createUserDto.roles) {
+      const listRoleId = createUserDto.roles?.map((role) => role.id);
+      const userRoles = await this.roleService.getRoleById(listRoleId);
+      if (userRoles) {
+        newUser.roles = userRoles;
+      }
+    }
+
     try {
       newUser.id = GenUUIDv4();
+      newUser.password = createUserDto.password ? newUser.password : 'default';
       newUser.status = CommonStatus.ACTIVE;
-      newUser.roles = roles;
       await this.userRepo.save(newUser);
       return newUser;
     } catch (error) {
